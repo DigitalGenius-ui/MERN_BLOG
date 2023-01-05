@@ -1,18 +1,19 @@
-import React from 'react'
-import styled from 'styled-components'
-import Forms from './Forms/Forms'
-import Navigation from './Navigation/Navigation'
-import Posts from './Posts/Posts'
+import React from "react";
+import styled from "styled-components";
+import Posts from "./Posts/Posts";
+import Banner from "./Banner/Banner";
+import Filter from "./Filter/Filter";
 
 const Home = () => {
   return (
-      <Container>
-          <Navigation />
-          <Posts />
+    <Container>
+      <Banner />
+      <Filter/>
+      <Posts />
     </Container>
-  )
-}
+  );
+};
 
 export default Home;
 
-const Container = styled.div``
+const Container = styled.div``;

@@ -1,18 +1,27 @@
 import React from "react";
 import styled from "styled-components";
-import { ImBlogger } from "react-icons/im";
-import { FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-const Navigation = () => {
+const Navigation = ({ item, navLink, setNavLink }) => {
+  const navigate = useNavigate();
+  const changeNav = () => {
+    setNavLink(item.path);
+    navigate(item.path)
+  };
+
+
   return (
     <Container>
-      <Logo>
-        <ImBlogger />
-      </Logo>
-      <User>
-        <h4>Milad Amiri</h4>
-        <FaUserCircle style={{ fontSize: "1.6rem" }} />
-      </User>
+      <ul>
+        <li
+          onClick={changeNav}
+          className={
+            navLink && window.location.pathname === item.path ? "light" : "dark"
+          }
+        >
+          {item.title}
+        </li>
+      </ul>
     </Container>
   );
 };
@@ -20,17 +29,18 @@ const Navigation = () => {
 export default Navigation;
 
 const Container = styled.div`
-  width: 80%;
-  margin: 0 auto;
-  padding: 1rem 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  ul {
+    li {
+      list-style: none;
+      cursor: pointer;
+    }
+    .light {
+      color: rgb(0, 0, 0);
+      font-weight: 600;
+    }
+
+    .dark {
+      color: rgba(0, 0, 0, 0.7);
+    }
+  }
 `;
-const Logo = styled.div``;
-const User = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-`;
-const Avatar = styled.div``;
