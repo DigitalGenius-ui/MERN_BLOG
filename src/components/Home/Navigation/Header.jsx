@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { FaUserCircle } from "react-icons/fa";
 import Navigation from "./Navigation";
+import { BlogContext } from "../../../Context/Context";
+import { useNavigate } from "react-router-dom";
 const Header = () => {
   const [navLink, setNavLink] = useState("/");
+  const { isAuth } = BlogContext();
 
   const nav = [
     {
@@ -24,12 +27,14 @@ const Header = () => {
     },
   ];
 
+  const navigate = useNavigate();
+
   return (
     <Container>
       <Content>
-        <User>
+        <User onClick={() => navigate("/auth")}>
           <FaUserCircle style={{ fontSize: "1.6rem" }} />
-          <h4>Milad Amiri</h4>
+          <h4>{isAuth ? isAuth.username : "Sign In"}</h4>
         </User>
         <Nav>
           {nav.map((item, i) => (
@@ -73,10 +78,12 @@ const User = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  cursor: pointer;
 
   h4 {
     font-weight: 600;
     font-size: 0.9rem;
     color: rgba(0, 0, 0, 0.7);
+    text-transform: capitalize;
   }
 `;

@@ -7,15 +7,17 @@ import FeaturedPosts from "./FeaturedPosts";
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import Categories from "./Categories";
+import { BlogContext } from "../../../../Context/Context";
 
 const SinglePost = () => {
   const [post, setPost] = useState("");
   const [loading, setLoading] = useState(false);
   const location = useLocation();
   const id = location.pathname.split("/")[2];
-  const navigate = useNavigate();
+  const { setPostId, isAuth } = BlogContext();
 
   const folder = "http://localhost:5000/upload/";
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
@@ -23,7 +25,6 @@ const SinglePost = () => {
       try {
         const { data } = await axios.get(`/posts/${id}`);
         setPost(data);
-        console.log(data.tags);
         setLoading(false);
       } catch (error) {
         console.log(error.message);
@@ -33,22 +34,19 @@ const SinglePost = () => {
     getSinglePost();
   }, [id]);
 
-  const deletePost = async (id) => {
+  const deletePost = async () => {
     try {
-      navigate("/");
       await axios.delete(`http://localhost:5000/api/posts/${id}`);
+      window.location.replace("/");
     } catch (error) {
       console.log(error.message);
     }
     };
     
-    const editPosts = async (id) => {
-        try {
-           await axios.put(`http://localhost:5000/api/posts/${id}`); 
-        } catch (error) {
-            
-        }
-    }
+  const editPosts = (id) => {
+    setPostId(id);
+    navigate("/addPost")
+  }
 
   return (
     <Container>
@@ -59,10 +57,12 @@ const SinglePost = () => {
           </ImageFile>
           <Contents>
             <div className="head">
-              {post.tags && <span style={{fontSize : "0.7rem"}}>{post.tags[0]}</span>}
+              {post.tags && (
+                <span style={{ fontSize: "0.7rem" }}>{post.tags[0]}</span>
+              )}
               <div className="actions">
                 <p>Created At {moment(post.createdAt).format("dd MMM yyy")}</p>
-                <span>
+                <span onClick={() => editPosts(post._id)}>
                   <FiEdit
                     style={{
                       fontSize: "1.6rem",
@@ -71,7 +71,7 @@ const SinglePost = () => {
                     }}
                   />
                 </span>
-                <span onClick={() => deletePost(post._id)}>
+                <span onClick={deletePost}>
                   <RiDeleteBin5Line
                     style={{
                       fontSize: "1.7rem",

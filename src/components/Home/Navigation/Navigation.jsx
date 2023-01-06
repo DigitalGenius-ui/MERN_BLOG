@@ -4,11 +4,11 @@ import { useNavigate } from "react-router-dom";
 
 const Navigation = ({ item, navLink, setNavLink }) => {
   const navigate = useNavigate();
+
   const changeNav = () => {
     setNavLink(item.path);
     navigate(item.path)
   };
-
 
   return (
     <Container>
@@ -33,6 +33,8 @@ const Container = styled.div`
     li {
       list-style: none;
       cursor: pointer;
+      text-transform: uppercase;
+      font-size: 0.9rem;
     }
     .light {
       color: rgb(0, 0, 0);

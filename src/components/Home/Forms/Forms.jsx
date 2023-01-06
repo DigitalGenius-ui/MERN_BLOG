@@ -1,46 +1,54 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { BlogContext } from "../../../Context/Context";
 import axios from "axios";
 import { FaRegTimesCircle } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 
 const Forms = () => {
-  const { formData, setFormData, file, setFile } = BlogContext();
-  const navigate = useNavigate();
+  const { formData, setFormData, file, setFile, postId, posts } = BlogContext();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => {
-      return {
-        ...prev,
-        [name]: value,
-      };
-    });
-  };
+  const post = postId ? posts.find((p) => p._id === postId) : null;
+
+  useEffect(() => {
+    if (post) {
+      setFormData(post);
+    }
+  }, [post, setFormData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (file) {
-      const form = new FormData();
-      const imageName = Date.now() + file.name;
-      form.append("name", imageName);
-      form.append("file", file);
-      formData.imageFile = imageName;
-
+    if (postId) {
       try {
-        await axios.post("/upload", form);
+        window.location.replace(`/post/${postId}`);
+        await axios.put(
+          `http://localhost:5000/api/posts/update/${postId}`,
+          formData
+        );
       } catch (error) {
-        console.log(error);
+        console.log(error.message);
       }
+    } else {
+      if (file) {
+        const form = new FormData();
+        const imageName = Date.now() + file.name;
+        form.append("name", imageName);
+        form.append("file", file);
+        formData.imageFile = imageName;
 
-      try {
-        navigate("/")
-        setFile("")
-        await axios.post("/posts/create", formData);
-      } catch (error) {
-        console.log(error);
+        try {
+          await axios.post("/upload", form);
+        } catch (error) {
+          console.log(error);
+        }
+
+        try {
+          setFile("");
+          await axios.post("/posts/create", formData);
+          window.location.replace("/");
+        } catch (error) {
+          console.log(error);
+        }
       }
     }
   };
@@ -48,24 +56,29 @@ const Forms = () => {
   return (
     <Form onSubmit={handleSubmit}>
       <Content>
-        <h1>Create Post</h1>
+        <h1>{postId ? "Update" : "Create"} Post</h1>
         <input
-          onChange={handleChange}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           type="text"
           placeholder="Title"
+          value={formData.title}
           name="title"
         />
         <textarea
-          onChange={handleChange}
+          onChange={(e) =>
+            setFormData({ ...formData, description: e.target.value })
+          }
           name="description"
+          value={formData.description}
           placeholder="Description..."
           cols="30"
           rows="10"
         ></textarea>
         <input
-          onChange={handleChange}
-          type="text"
+          onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+          value={formData.tags}
           name="tags"
+          type="text"
           placeholder="Tags..."
         />
         <input type="file" onChange={(e) => setFile(e.target.files[0])} />
@@ -81,7 +94,7 @@ const Forms = () => {
             </span>
           </ImageFile>
         )}
-        <button>submit</button>
+        <button>{postId ? "Update" : "Submit"}</button>
       </Content>
     </Form>
   );
@@ -89,8 +102,7 @@ const Forms = () => {
 
 export default Forms;
 
-const Form = styled.form`
-`;
+const Form = styled.form``;
 
 const Content = styled.div`
   display: flex;
@@ -132,7 +144,7 @@ const ImageFile = styled.div`
     position: absolute;
     top: -0.5rem;
     left: 0;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     border-radius: 50px;
     color: #fff;
     width: 1.4rem;

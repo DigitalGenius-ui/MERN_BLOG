@@ -14,6 +14,10 @@ const Context = (props) => {
   const [file, setFile] = useState("");
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [postId, setPostId] = useState("");
+  const [isAuth, setIsAuth] = useState(
+    JSON.parse(localStorage.getItem("auth"))
+  );
 
   useEffect(() => {
     const fetchAllPosts = async () => {
@@ -40,7 +44,11 @@ const Context = (props) => {
         posts,
         setPosts,
         loading,
-        setLoading
+        setLoading,
+        postId,
+        setPostId,
+        isAuth,
+        setIsAuth,
       }}
     >
       {props.children}
